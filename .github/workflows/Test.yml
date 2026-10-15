@@ -127,6 +127,15 @@ jobs:
         cmake ..
         cmake --build .
 
+    - name: '🔍 Show linked libraries'
+      run: otool -L build/openFPGALoader
+
+    - name: '📤 Upload artifact: macOS binary'
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-latest-openFPGALoader
+        path: build/openFPGALoader
+
 
   lin-test:
     needs: lin-build
