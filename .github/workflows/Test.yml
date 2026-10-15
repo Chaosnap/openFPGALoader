@@ -127,14 +127,24 @@ jobs:
         cmake ..
         cmake --build .
 
-    - name: '🔍 Show linked libraries'
-      run: otool -L build/openFPGALoader
+        make DESTDIR=$(pwd)/dist install
+        _licenses="dist/usr/local/share/licenses/openFPGALoader"
+        mkdir -p "${_licenses}"
+        install -m 644 ../LICENSE "${_licenses}"
 
-    - name: '📤 Upload artifact: macOS binary'
+        tar -cvzf ../macos-latest-openFPGALoader.tgz -C dist .
+
+    # Linked against Homebrew's libftdi/libusb/hidapi: users need those installed.
+    - name: '🔍 Show linked libraries'
+      run: |
+        otool -L build/openFPGALoader
+        build/openFPGALoader --Version
+
+    - name: '📤 Upload artifact: tarball'
       uses: actions/upload-artifact@v4
       with:
         name: macos-latest-openFPGALoader
-        path: build/openFPGALoader
+        path: macos-latest-openFPGALoader.tgz
 
 
   lin-test:
@@ -203,7 +213,7 @@ jobs:
 
   Release:
     if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || contains(github.ref, 'refs/tags/'))
-    needs: [ doc, lin-test, win ]
+    needs: [ doc, lin-test, win, mac-build ]
     runs-on: ubuntu-latest
     name: '📦 Release'
     steps:
