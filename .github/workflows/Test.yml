@@ -181,8 +181,9 @@ jobs:
     - id: matrix
       uses: msys2/setup-msys2/matrix@a5d2c5a565c520efa5f477391e4e3f87c2e08f46
       with:
+        # No mingw64: MSYS2 no longer packages libftdi for it
+        # (mingw-w64-x86_64-libftdi is gone; ucrt64/clang64 still have it).
         systems: >-
-          mingw64
           ucrt64
           clang64
 
